@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 55.033749 84.407545" height="100%" width="100%" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <defs id="defs4"></defs>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="text4004" style="letter-spacing:0px;word-spacing:0px;" font-weight="bold" font-size="40px" font-style="normal" font-stretch="condensed" line-height="125%" font-variant="normal" font-family="Folio Std" fill="#ff2a2a">
+  <path id="path5439" style="text-align:start;" d="m20.12,69.01-0.28-0.32-19.6,0-0.24,2.52,0.28,0.32,19.64,0,0.2-2.52"/>
+  <path id="path5441" style="text-align:start;" d="m34.73,60.57-0.6-0.44-8.6,2.52,0,3.24,0.36,0.24,4.88-1.36,0.04,7.76-0.24,7.84,4.12,0-0.2-8.28,0.24-11.52"/>
+  <path id="path5443" style="text-align:start;" d="m44.19,60.33-3.96-0.16-0.28,3.48,0.24,0.4,3.32-0.36,7.68,0-8.92,19.16,0.24,0.68,3.28,0.88,1.96-5.24,7.28-15.92-0.04-3-1.8,0.08-9,0"/>
+ </g>
+ <g id="g5445">
+  <path style="baseline-shift:baseline;block-progression:tb;color:#000000;direction:ltr;text-indent:0;text-align:start;enable-background:accumulate;text-transform:none;" d="m28.91,4.969,0,48,3,0,0-48-3,0z" fill="#000"/>
+  <path id="path5449" stroke-linejoin="round" d="M23.16,20.67,30.39,1,37.62,20.67c-4.27-3.142-10.11-3.124-14.46-0.000001z" fill-rule="evenodd" stroke-width="0.625"/>
+ </g>
+</svg>

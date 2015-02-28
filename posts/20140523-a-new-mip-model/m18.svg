@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 58.43375 84.985723" height="100%" width="100%" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <defs id="defs4"></defs>
+ <metadata id="metadata7">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="text4004" style="letter-spacing:0px;word-spacing:0px;" font-weight="bold" transform="translate(-12.494197,-27.159768)" font-size="40px" font-stretch="condensed" line-height="125%" font-variant="normal" font-family="Folio Std" font-style="normal" fill="#ff2a2a">
+  <path id="path5405" style="text-align:start;" d="m33.61,99.47-0.28-0.32-19.6,0-0.24,2.52,0.28,0.32,19.64,0,0.2-2.52"/>
+  <path id="path5407" style="text-align:start;" d="m48.23,91.03-0.6-0.44-8.6,2.52,0,3.24,0.36,0.24,4.88-1.36,0.04,7.76-0.24,7.84,4.12,0-0.2-8.28,0.24-11.52"/>
+  <path id="path5409" style="text-align:start;" d="m62.69,87.11c-4.32,0-7.32,2.36-7.32,6.32,0,3,1.8,4.56,3.64,5.52v0.2c-2.32,1.12-4.52,2.8-4.52,5.96,0,3.52,2.64,6.04,7.32,6.04,4.88,0,8.12-2.6,8.12-6.76,0-3.32-2.28-4.72-4.4-5.76v-0.2c1.96-1.24,3.68-2.84,3.68-5.64,0-3.52-2.44-5.68-6.52-5.68m-0.2,2.88c2.16,0,3.52,1.2,3.52,3.2,0,2.24-1.6,3.32-3.4,4.16-2.04-0.8-3.88-1.76-3.88-4.04,0-2.04,1.4-3.32,3.76-3.32m-0.6,10.36c2.36,0.96,4.64,1.84,4.64,4.32,0,2.08-1.6,3.64-4.36,3.64-2.64,0-4.24-1.48-4.24-3.68,0-2.48,1.88-3.52,3.96-4.28"/>
+ </g>
+ <g id="g5411" transform="translate(-12.494197,-27.159768)">
+  <path id="path4008" style="baseline-shift:baseline;block-progression:tb;color:#000000;direction:ltr;text-indent:0;text-align:start;enable-background:accumulate;text-transform:none;" fill="#000" d="m47.5,32.12,0,48,3,0,0-48-3,0z"/>
+  <path id="path5417" stroke-linejoin="round" d="m41.73,47.83,7.232-19.67,7.232,19.67c-4.27-3.142-10.11-3.124-14.46-0.000001z" fill-rule="evenodd" stroke-width="0.625"/>
+ </g>
+</svg>

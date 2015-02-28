@@ -1,0 +1,376 @@
+body {
+  font-family: "Work Sans2", sans-serif;
+  font-size: 100%;
+  line-height: 135%;
+  color: #222;
+  margin: 0px;
+  padding: 0px;
+}
+
+p {
+  clear: both;
+}
+
+#content {
+  padding-top: 2em;
+  padding-left: 5.5em;
+  width: 40em;
+  height: 100%
+  font-size: 170%;
+}
+
+@font-face {
+  font-family: "Work Sans2";
+  font-style: normal;
+  font-weight: 400;
+  src: url("Fonts/WorkSans-Regular.woff2") format("woff2"), url("Fonts/WorkSans-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("Fonts/WorkSans-Bold.woff2") format("woff2"), url("Fonts/WorkSans-Bold.woff") format("woff");
+}
+@font-face {
+  font-family: "Inknut Antiqua";
+  font-style: normal;
+  font-weight: 700;
+  src: url("Fonts/InknutAntiqua-Bold.woff2") format("woff2"), url("Fonts/InknutAntiqua-Bold.woff") format("woff");
+}
+/* *********** HEADER STUFF ************* */
+
+#backgrounddiv {
+  position: fixed;
+  margin: 0px;
+  padding: 0px;
+  bottom: 0px;
+  left: 0px;
+  min-height: 100%;
+  height: 100%;
+  width: 289px;
+  background: url(../leftbar.jpg) left bottom fixed;
+  background-color: #010619;
+  color: white;
+}
+
+.pagetitle {
+  font-family: "Antonio", sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+}
+
+.leftheader {
+  margin-top: 4.7em;
+  margin-left: 1em;
+  font-size: 1.2em;
+  color: white;
+  height: 2em;
+}
+
+#topheaderdiv {
+  margin: 0px;
+  padding-top: 1em;
+  padding-left: 4em;
+  text-align: center;
+  width: 40em;
+  height: 100%;
+  display: inline-block;
+}
+
+.topheader {
+  font-size: 2em;
+  margin: 0 auto;
+  display: inline;
+} 
+
+a.leftheader-link {
+  color: white;
+  width: 100%;
+  line-height: 300%;
+  display: block;
+  padding-left: 0.8em;
+}
+
+a.leftheader-link:hover {
+  background-color: white;
+  color: #C90022;
+}
+
+a.leftheader-link-current {
+  color: white;
+  font-weight: 700;
+}
+
+a.topheader-link {
+  color: #C90022;
+  width: 100%;
+  line-height: 140%;
+  text-align: center;
+}
+
+a.topheader-link:hover {
+  color: #222;
+}
+
+a.topheader-link-current {
+  color: #222;
+  font-weight: 700;
+}
+
+a.leftheader-link:before {
+  content: "→ ";
+  color: white;
+}
+
+a.leftheader-link-current:before {
+  content: "→ ";
+  font-weight: normal;
+}
+
+a.leftheader-link:hover:before {
+  content: "→ ";
+  color: #222;
+  font-weight: normal;
+}
+
+a.topheader-link:before {
+  content: "→ ";
+  color: #C90022;
+}
+
+a.topheader-link-current:before {
+  content: "→ ";
+  font-weight: normal;
+}
+
+a.topheader-link:hover:before {
+  content: "→ ";
+  color: #222;
+  font-weight: normal;
+}
+
+/* *********** BLOGLINK PAGE ************ */
+
+.bloglink-entry {
+  padding-bottom: 1em;
+  padding-top: 2em;
+  border-bottom: 1px solid lightgray;
+}
+
+.bloglink-image {
+  float: left;
+  margin-right: 1em;
+  margin-top: 0.3em;
+}
+
+.bloglink-header {
+  display: inline-block;
+  margin: 0px;
+  padding: 0px;
+}
+
+
+.bloglink-category {
+  color: gray;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 91%;
+  font-weight: 600;
+  margin: 0;
+  padding: 0;
+}
+
+.bloglink-subtitle {
+  color: gray;
+  font-style: italic;
+}
+
+.bloglink-teaser {
+  margin-top: 0;
+  width: 30em;
+}
+
+a.bloglink {
+  font-family: "Inknut Antiqua", serif;
+  font-weight: 700;
+  font-size: 166%;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
+  display: block;
+  position: relative;
+  left: 0px;
+  color: #DC143C;
+  letter-spacing: 0px;
+  line-height: 130%;
+}
+
+a.bloglink:visited {
+  color: dark red;
+}
+
+
+h1.blogtitle {
+  font-family: "Inknut Antiqua", serif;
+  font-weight: 700;
+  color: #DC143C;
+  margin: 0em 0em 0 0;
+  line-height: 120%;
+  letter-spacing: -0.05em;
+}
+
+h1 {
+  color: #DC143C;
+  font-family: "Inknut Antiqua", serif;
+  font-size: 200%;
+  font-weight: 600;
+}
+
+article {
+  width: 30em;
+}
+
+a {
+  color: #C90022;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #434343;
+}
+
+
+h2 {font-size: 135%; font-family: 'Inknut Antiqua', serif; text-transform: uppercase; font-weight: 800;
+  letter-spacing: 0.15em; left: -130px; position:relative;counter-increment: chapter;	counter-reset: section 0;
+  text-indent: -130px; margin-left: 130px; line-height: 100%; color:
+rgb(40,40,40);}
+h3 {counter-increment: section; font-size: 112%; left: -130px;
+  position: relative; font-family: 'Inknut Antiqua', serif; font-weight: 800;
+  letter-spacing: 0.06em; margin-bottom: 0.8em;
+color: rgb(40,40,40); text-indent: -130px; margin-left: 130px;}
+h2:before {
+  content: counter(chapter);
+  width: 100px;
+  display: inline-block;
+  margin-right: 30px;
+  text-align:right;
+}
+h3:before {
+  content: counter(chapter) "." counter(section) " ";
+  width: 100px;
+  display: inline-block;
+  margin-right: 30px;
+  text-align: right;
+}
+h3.nocounter:before {content: ""}
+h3.bloglink:before {content:""}
+
+/**** LISTS *****/
+
+div#content ul li:before {
+  content: "\2014\020";
+  width: 0.8em;
+  display: inline-block;
+}
+
+div#content ul li {
+  margin-left: -0.8em;
+  text-indent: -0.8em;
+}
+
+div#content ul li {
+  margin-bottom: 1em;
+}
+
+div#content ul.tight li {
+  margin-bottom: 0.2em;
+}
+
+div#content ul li:last-child {
+  margin-bottom: 0.4em;
+}
+
+div#content ul {
+  list-style-type: none;
+  list-style-position: inside;
+}
+
+/**** TABLES ******/
+  
+.kb {width: 3em;}
+.kbrow {border-bottom: 2px gray solid;}
+table.tttable {
+  border-collapse: collapse;
+  background-color: #ebebeb;
+}
+table.tttable tr td{
+  border: 1px solid #BBB;
+  font-family: monospace;
+  padding: 0.4em;
+  text-align: right;
+}
+table.tttable tr th {
+  border: 1px solid #BBB;
+  font-family: monospace;
+  padding: 0.4em;
+  text-align: right;
+}
+/**** FIGURES ****/
+
+figure {
+  padding: 1em;
+}
+
+figcaption {
+  margin-left: 1em;
+  font-size: 80%;
+  font-style: italic;
+  line-height: 110%;
+}
+
+/*** CODE ***/
+
+pre {
+  margin-left: 1em;
+  border-left: 2px #343434 solid;
+  padding: 1em;
+  background-color: #EfEfEf;
+  line-height: 130%;
+  font-size: 90%;
+  width: 92%;
+}
+
+.math {
+ text-indent: 0;
+ font-size: 90%;
+}
+
+div.math {
+  margin-left: 30%;
+  font-size: 90%;
+}
+
+/**** FOOTER ****/
+
+.tombstone {
+  margin: 1em auto;
+  text-align: center;
+  font-size: 150%;
+  color: gray;
+  font-family: "Inknut Antiqua";
+  font-weight: 600;
+}
+
+.footer {
+  font-size: 70%;
+  color: gray;
+  line-height: 140%;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+::selection {
+  background: #ffb7b7;
+}
+::-moz-selection {
+  background: #ffb7b7;
+}

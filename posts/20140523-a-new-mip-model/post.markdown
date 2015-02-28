@@ -1,0 +1,556 @@
+<script type="text/javascript" src="js/katex/katex.min.js"></script>
+<link rel="stylesheet" href="js/katex/katex.min.css"></link>
+<script type="text/javascript">
+  $(function() {
+  $(".math, .tmath").each(function() {
+    var texTxt = $(this).text();
+    el = $(this).get(0);
+    if(el.tagName == "DIV"){
+        addDisp = "\\\\displaystyle{";
+        addDispAfter = "}"
+    } else {
+        addDisp = "";
+        addDispAfter = "";
+    }
+    try {
+        katex.render(addDisp+texTxt+addDispAfter, el);
+    }
+    catch(err) {
+        $(this).html("<span class='err'>"+err);
+    }
+  });
+  $(".imath").each(function() {
+    var texTxt = $(this).text();
+    el = $(this).get(0);
+    try {
+        katex.render(texTxt, el);
+    }
+    catch(err) {
+        $(this).html("<span class='err'>"+err);
+    }
+  });
+  })
+</script>
+
+<script type="text/javascript" src="{{path}}/batch_viz.js"></script>
+<link rel="stylesheet" href="{{path}}/batch_viz.css"></link>
+
+This blog post is a written version of the talk I gave at CPAIOR last year,
+which in turn was an animated, pop-sci version of the original paper published
+with <a href="http://tidel.mie.utoronto.ca/beck.php">J.C.
+Beck</a> (<a
+href="http://link.springer.com/chapter/10.1007%2F978-3-319-07046-9_5">Springer Link</a>, <a
+href="http://tidel.mie.utoronto.ca/pubs/kosch_cpaior2014.pdf">PDF</a>).
+
+To make things short, we were working on the following problem: imagine, for the
+moment, that you wanted to construct some marvelously complex machine, like an
+airplane, and that your airplane consisted of, say, a hundred parts (ha!). Suppose now
+that you are on a tight schedule, and so you need all 100 parts ready at specific
+points in time. It just so happens that 50 of these parts need to be processed
+by one particular machine in your factory, and it becomes clear that this
+machine will be the bottleneck of your production line. What to do?
+
+Now, just so we're on the same page, this is a real problem. Many airplane parts, for
+example, are made of lightweight composite materials. Composites are made of a
+so-called *matrix* of glue-like stuff (e.g. resin) for bulk and a woven fabric (e.g. of
+carbon fiber) to hold it together. For the matrix to harden, it must go into
+a curing oven for a certain minimum amount of time. Here is a video of such a
+machine:
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Th-sOyQb0P4?start=34" frameborder="0" allowfullscreen></iframe>
+
+When we were considering this problem, a French doctorand named Arnaud Malapert had just <a href="http://www.sciencedirect.com/science/article/pii/S0377221712002846">published</a> (<a href="http://www.crt.umontreal.ca/~louism/MGR_batch.pdf">PDF</a>) the results of his dissertation on our airplane factory problem. His approach was successful and sophisticated&mdash;maybe too sophisticated, we thought. Could we come up with a simpler technique?
+
+## Modelling the problem
+Since all of those 50 parts are needed to make the plane, it
+doesn't matter if 49 parts are ready on time if it means that the
+50<sup>th</sup> will be delayed by two weeks. From that perspective, the
+completion date of our airplane really only depends on the very last
+part to be ready for assembly. Since some of the 50 parts need to be painted or
+tested after curing, that part isn't necessarily the last one to leave the
+curing oven; but it is the one to leave the curing oven with the greatest delay.
+
+The video above showed a single elephantine cylinder being rolled into the oven chamber on a pushcart.
+Of course, many of the parts are small enough to go onto a cart together, so
+the central question becomes: which parts can we put onto a cart together, and which
+one of those carts gets to go first?
+
+If you've done integer programming before, or any similar kind of
+discrete-math algorithmicking, then this will strike you as [one of
+those](http://en.wikipedia.org/wiki/NP-complete) mind-boggling combinatorial problems
+where we have to search through all the zillions of possible solutions to find the best
+one. And indeed, it's one of those. So we will use an appropriate piece of software
+<a href="http://www-01.ibm.com/software/commerce/optimization/cplex-optimizer/">CPLEX</a>
+to do the searching for us. But the search is performed cleverly. As we
+construct a potential solution by assigning parts onto carts, we know that the
+greatest delay will only get worse with every assigned part, never better. So
+whenever we get to a point in building a solution where the greatest delay is
+*already worse* than that of the best known *complete* solution (i.e., one with
+all parts assigned), then we should stop and try something else. This way, we'll
+never waste time looking through solutions that we know won't be better
+than what we already have. This common-sense strategy is called <a href="http://en.wikipedia.org/wiki/Branch_and_bound]">branching-and-bounding</a>
+and a good theoretical introduction is found
+<a href="http://www.mathematik.uni-kl.de/fileadmin/opt/IntegerProgramming_WS1314/ip-chapter8.pdf">here</a>. But don't worry about the details, they're not important here.
+
+### Nomenclature
+
+The searching software (called solver) needs a way to know about
+the relationship between parts, carts, and delays, so that it can
+distinguish promising solutions from inauspicious ones as it systematically searches
+through them. Because of the particular technique (called <a href="http://en.wikipedia.org/wiki/Linear_programming">linear programming</a>) that the
+solver uses to avoid testing infeasible solutions, for instance those with carts running over, we must
+formulate these relationships as linear inequalities. As you will see, that is
+easy.
+
+Before we can start, let's agree on some terminology. Because it is customary in
+the AI scheduling community, we will call every part a *job* and give it an
+index <span class="math">j</span>. Likewise, we will refer to the carts as
+*batches* and number them by the order in which they go in the oven; let's use
+the index <span class="math">k</span>.
+
+Every job <span class="math">j</span> has three known properties:
+<ul class="tight">
+<li>a processing time <span class="math">p_j</span>: the minimum time it takes for the part to cure, so our airplane is safe,</li>
+<li>a size <span class="math">s_j</span>: the amount of room it takes up on a cart,</li>
+<li>a due date <span class="math">d_j</span>: the point at which the part *should* leave the oven to get
+painted; we'll use this to calculate the part's delay.</li>
+</ul>
+
+The following animated figure should give you a rough visual idea of what we're dealing
+with.
+
+<div id="ex1">
+<img src='{{path}}/pbrack.svg' style='width: 11em; height: auto; left: 0.8em;
+top: -28em; z-index:10;' class="ex1a" id="ex1a1">
+<img src='{{path}}/sbrack.svg' style='width: auto; height: 15em; left: -6em;
+bottom: 2.9em;' class="ex1a" id="ex1a2">
+<img src='{{path}}/pkbrack.svg' style='width: 14em; height: auto; left: 31.4em;
+bottom: -10em;' class="ex1a" id="ex1a3">
+</div>
+<div>
+<button id="ex1prev">Previous</button>
+<button id="ex1next">Next</button>
+<div id="ex1exp" class="figexpright">All the jobs.</div>
+</div>
+
+Speaking of the delay: scheduling people like to use
+the term *lateness*. And what we're trying to minimize,
+specifically, is the *maximum lateness*, or <span
+class="math">L _ \text{max}</span>. We could call it a <a
+href="http://en.wikipedia.org/wiki/Minimax">Minimax</a> optimization, of sorts.
+
+
+### A naive MIP model
+
+After thinking about this batching thing for a short while, it becomes obvious
+that what matters to a batch (in terms of lateness) are two things: the job with
+the longest processing time, and the job with the earliest due date. The former
+determines for how long the batch will stay in the oven; the latter is an
+unlucky candidate for having the maximum lateness. All the other jobs in the
+batch&mdash;well, all they have to worry about is whether they fit onto the cart at
+all.
+
+The fundamental rule we can determine with this problem is that to minimize
+<span class="math">L _ {max}</span>, we need to find a solution in which all the
+batches are sorted by increasing due date. Sure, other optimal solutions might
+exist, but they can all be reshuffled to have their batches in due date order.
+We'll refer to this rule as the <strong>earliest-due date</strong> rule, or
+<strong>EDD</strong>.
+
+
+Our set of inequalities revolves around a matrix of binary variables <span
+class="math">x _ {jk}</span>. An entry in that matrix is set to 1 if job <span
+class="math">j</span> is assigned to batch <span class="math">k</span>, and 0 if
+not. Once we've agreed on that, everything else falls into place:
+
+<table class="mathalign">
+<tr><td class="mathalign-right">
+<div class="tmath">\text{Min.}\quad</div></td><td>
+<div class="tmath">L _ \text{max}</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath">\text{s.t.}\quad</div></td><td>
+<div class="tmath">\sum _ {k \in B} x _ {jk}= 1\quad \forall j \in J</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">\sum _ {j \in J} s_j x _ {jk} \le b\quad \forall k \in B</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">P_k \ge p_j x _ {jk} \quad \forall k \in B</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">C_k = C _ {k-1} + P_k \quad \forall k \in B</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">D_k \ge D _ {k-1} \quad \forall k \in B</div></td></tr>
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">D_k \le (d _ \text{max} - d_j)(1- x _ {jk}) + d_j\quad \forall k \in B</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">L _ \text{max} \ge C_k - D_k \quad \forall k \in B</div></td></tr>
+</table>
+
+The first line, as is convention, announces the expression we desire to
+minimize. The first *constraint*, then, following the conventional "s.t." for
+"subject to", declares that each job can only be assigned to one batch: for each
+job <span class="math">j</span> in the set of jobs <span class="math">J</span>,
+the sum over all <span class="math">x _ j</span>'s of different <span
+class="math">k</span>'s must be exactly one.
+
+Similarly, the second constraint ensures that the sum of job sizes in a
+batch doesn't exceed the cart's size <span class="math">b</span>. The
+third constraint establishes a value for <span class="math">P_k</span>,
+the processing time of batch <span class="math">k</span>: it's at least
+as long as the longest of all of the jobs assigned to it. The fourth
+constraint postulates the obvious: a batch's completion time <span
+class="math">C_k</span> equals the completion time of the previous batch
+plus its own processing time. Then we formulate the EDD rule; simple stuff.
+The next constraint looks complex, but only makes
+sure that the aggregate due date of a batch, <span class="math">D_k</span>, is
+at most that of it's earliest-due job (unless it's an empty batch, in which case
+we'll substitute a pointlessly huge number <span class="math">d _ \text{max}</span>). Finally, we'll declare <span class="math">L _ \text{max}</span> to be the greatest of all the delays suffered by the
+individual batches. 
+
+Phew. Not so bad, was it?
+
+The above looks like a run-of-the-mill MIP (Mixed-Integer Programming) model.
+The price for this elegant, declarative programming style is that the solver's
+performance is absolutely unpredictable. And&mdash;surprise!&mdash;in this case
+it was nothing short of pathetic. Arnaud's model was able to
+really shine in comparison.
+
+## Remodelling the problem
+
+As it so often happens in life, the serendipitous mistakes bear more
+fruit than all honest attempts at systematic work. I had just spent
+about half a year trying various heuristics, decompositions etc., with
+one of them being more disappointing than the next, when suddenly, after
+mistakenly hitting *compile* in the middle of writing a constraint, the
+solver started spitting out (correct) results at blazing speeds. The model made
+absolutely no sense, and sure enough, some of the results ended up being
+incorrect. But it inspired a new way for me to think about the problem at hand.
+
+Instead of just talking about assignments of jobs to batches, we think of
+an initial schedule (which we know is terrible) and then imagine making
+improvements to it by moving jobs, one by one, into other batches. Permitting
+only re-assignments (moves) that improve the maximum lateness provides a mental
+framework to reason about constraints&mdash;even though at the end of the day,
+there is no initial schedule, and the moves are still just assignments.
+
+For reasons of simplicity, our initial schedule will be the schedule in
+which each job is assigned to one batch, namely the batch that matches
+its index number (<span class="math">j = k</span>). Oh, I forgot to
+mention: to do that, we'll sort the jobs by increasing due date. This way, all
+batches are in order of their due dates (EDD) and they all contain a single job.
+Let's call it the *single-EDD* schedule.
+
+Here's an example to demonstrate what happens when you play with the due date.
+The following figure shows a single-EDD schedule.
+
+<div id="ex5"></div>
+
+Now, going from this single-EDD schedule, we can reach any solution by moving
+jobs from their own batches into other batches. Indeed, we can look at any final
+schedule as a set of moves starting from the single-EDD schedule&mdash;a set of
+steps in move-space, if you will, starting from the origin. And we can rebuild
+our MIP model from that mental starting point.
+
+Before we consider constraints on processing and completion times,
+let's think about the EDD rule. Starting from a single-EDD schedule,
+the one way to violate the EDD order of batches is to move a job into
+a later-scheduled batch. So let's ban such moves. In terms of the
+assignment variable <span class="math">x_jk</span>, we can't have
+assignment of a job <span class="math">j</span> into a batch with an
+index <span class="math">k</span> greater than <span class="math">j<span>:
+
+<div class="math">
+  x _ {jk} = 0 \quad \forall j, k \,|\, j < k.
+</div>
+
+The animation below shows what that means in practice.
+
+<div id="ex2"> </div>
+<div>
+<button id="ex2prev">Previous</button>
+<button id="ex2next">Next</button>
+<div id="ex2exp" class="figexpright"></div>
+</div>
+
+The animation demonstrates an important point: yes, there are ways to
+move jobs into later batches without violating EDD. For example: if two
+jobs scheduled in sequence share the same due date, then we can move the
+first one into the second batch. But of course, we could also move the
+second one into the first batch. Similarly, when the jobs are very small
+compared to the capacity <span class="math">b</span>, we could move a
+whole sequence of jobs into a later batch, which would then assume the
+due date of the first of those jobs. But again: we could just as well move all
+of those jobs into the first of the batches into the sequence, complying with
+our rule and yet achieving the same end result.
+
+The subtext here, and this is worth pointing out, is that batches are set up
+from the start. They can be empty (which gives them a processing time of zero,
+and a due date of infinity), but they will stay in place. They are the board on
+which we move the jobs like gamepieces.
+
+### Host jobs and guest jobs
+
+But here's another constraint we have to introduce: when you put a job into a
+batch that just became empty, you end up messing with the EDD order. In other
+terms: a job can never be a guest in a batch that doesn't have its host anymore.
+Here's an example:
+
+<div id="ex3">
+<img src='{{path}}/guestarr.svg' style='width: auto; height: 7.04em; left: 5em;
+bottom: 10em; z-index:10;' class="ex1a" id="ex3a1">
+<img src='{{path}}/hostarr.svg' style='width: auto; height: 8.96em; left: 8em;
+bottom: -6em; z-index:10;' class="ex1a" id="ex3a2">
+<img src='{{path}}/hostlessarr.svg' style='width: auto; height: 12.56em; left:
+21.5em; bottom: 6.6em; z-index:10;' class="ex1a" id="ex3a3"> 
+</div>
+<button id="ex3prev">Previous</button>
+<button id="ex3next">Next</button>
+<div id="ex3exp" class="figexpright">
+</div>
+
+Expressing this as a linear constraint is straightforward:
+<div class="math">
+x_{kk} \ge x_{jk} \quad \forall j, k \,|\, j > k
+</div>
+In other words: when a job is no longer in its batch (i.e. <span class="math">x
+_ {kk} = 0</span>), then none of the later jobs at all can be assigned to that
+batch <span class="math">k</span>.
+
+There is a reason we named them host jobs and guest jobs: it is to reinforce the
+notion that a job *owns* its batch, because it determines its due date: since we
+have agreed to only move jobs into earlier-scheduled batches, a batch's due date
+will never change. In fact, we can give up the constraint
+<div class="math">
+  D_k = \min_{j\;in\;k} d_j \quad \forall k
+</div>
+in favour of the much simpler
+<div class="math">
+  D_k = d_k \quad \forall k.
+</div>
+
+### Calculating maximum lateness
+
+This simplification comes in very handy for our piece de
+r&eacute;sistance: calculating <span class="math">L _ {max}</span>, because not
+only do all batches have an inherent due date, they also all have an inherent
+lateness, namely their lateness in the single-EDD schedule:
+<div class="math">
+  L_{k,single} = C_{k,single} - D_k \quad \forall k.
+</div>
+To get from the single-EDD lateness to the batch's final lateness, all we have
+to do is find out how the individual moves we made change the batch's completion
+time. As we'll see in a second, that is easy.
+
+First, I quickly need to mention that both right-hand terms in the above
+equation are constants that we know up front: the single-EDD completion time is
+simply the sum of all the processing times leading up to batch <span
+class="math">k</span>. And <span class="math">D_k</span> is simply <span
+class="math">d_k</span>, as we've found out above.
+
+Here's how we'll calculate a batch's lateness <span class="math">L_k</span>: the
+table below the animation shows you a row for <span class="math">L _
+{k,single}</span>. Below, we'll tally up wherever completion times are changed
+for the better or the worse. The bottom line (literally) shows you the values
+for <span class="math">L_k</span> as we try out various moves.
+
+<div id="ex4">
+<img src='{{path}}/p12.svg' style='width: auto; height: 4em; left: 25em;
+bottom: -6em; z-index:10;' class="ex1a" id="ex4a2">
+<img src='{{path}}/m17.svg' style='width: auto; height: 5em; left: 16.8em;
+bottom: -6em; z-index:10;' class="ex1a" id="ex4a3">
+<img src='{{path}}/m18.svg' style='width: auto; height: 5em; left: 64.8em;
+bottom: -6em; z-index:10;' class="ex1a" id="ex4a1"> 
+<img src='{{path}}/p15.svg' style='width: auto; height: 4em; left: 1.4em;
+bottom: -6em; z-index:10;' class="ex1a" id="ex4a4"> 
+</div>
+<div>
+<button id="ex4prev">Previous</button>
+<button id="ex4next">Next</button>
+<div id="ex4exp" class="figexpright">
+</div>
+</div>
+
+<table style="width: 100%;border-collapse: collapse">
+<tr class="tableheader equalk"><td><span class="math">k</span></td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+<!--<tr class="equalk"><td><span
+class="xkk"></span></td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td></tr>-->
+<tr class="bottomgray equalk"><td><span
+class="math">p_k</span></td><td>2</td><td>17</td><td>6</td><td>14</td><td>11</td><td>18</td><td>19</td><td>8</td></tr>
+<tr class="equalk"><td><span
+class="math">L _ {k,single}</span></td><td>0</td><td>10</td><td>8</td><td>22</td><td>23</td><td>36</td><td>54</td><td>56</td></tr>
+<tr class="fragment equalk" id="ex4f1"><td rowspan="2"
+style="vertical-align:middle;text-align:right;">F &rarr; C <span
+style="font-size: 2.5em; font-weight: 100;">{</span></td><td></td><td></td><td></td><td></td><td></td><td>&ndash;18</td><td>&ndash;18</td><td>&ndash;18</td></tr>
+<tr class="fragment equalk" id="ex4f2"><td></td><td></td><td>+12</td><td>+12</td><td>+12</td><td>+12</td><td>+12</td><td>+12</td></tr>
+<tr class="fragment equalk" id="ex4f3"><td rowspan="2"
+style="vertical-align:middle; text-align:right;">B &rarr; A <span
+style="font-size: 2.5em; font-weight: 100;">{</span></td><td></td><td>&ndash;17</td><td>&ndash;17</td><td>&ndash;17</td><td>&ndash;17</td><td>&ndash;17</td><td>&ndash;17</td><td>&ndash;17</td></tr>
+<tr class="fragment equalk" id="ex4f4"><td style="text-align:right">+15</td><td>+15</td><td>+15</td><td>+15</td><td>+15</td><td>+15</td><td>+15</td><td>+15</td></tr>
+<tr class="equalk" id="totalL"><td><span class="math">L_k</span></td><td>0</td><td>10</td><td>8</td><td>22</td><td>23</td><td>36</td><td>54</td><td>56</td></tr>
+</table>
+
+Let's write out what we just did: 
+
+<div class="math">
+L_k = L _ {k, single} - \sum _ {h \le k} x _ {hh} p_h + \sum _ {h \le k} P' _ h
+\quad \forall k
+</div>
+
+Phew! The first term is known. The second term represents all the
+batches <span class="math">h</span> before <span class="math">k</span>
+that are empty: we can subtract their jobs' processing times from our
+lateness. On the other hand (and this is the second term), we have to
+add the overhangs (i.e. extra delays) we introduced when we moved long
+guest jobs into shorter host batches. The overhang <span class="math">P_k</span>
+is defined as
+<table class="mathalign">
+<tr><td class="mathalign-right"><span class="math">P' _ k \ge</span></td><td><span class="math">x _ {jk}
+p_j - p_k</span></td><td><span class="math">\quad \forall k</span></td></tr>
+<tr><td class="mathalign-right"><span class="math">P' _ k \ge</span></td><td><span class="math">0</span></td><td><span class="math">\quad \forall k</span></td></tr>
+</table>
+such that it's great.
+
+## Old vs. new model
+
+Here are the two models, side by side, without the foralls. We've gotten rid of two sets of
+variables: <span class="math">D_k</span> and <span class="math">C_k</span>. But
+not only that: we've also strengthened our constraints.
+
+<div>
+<div style="float:left;">
+<table>
+<tr><td class="mathalign-right">
+<div class="tmath">\text{Min.}\quad</div></td><td>
+<div class="tmath">L _ \text{max}</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath">\text{s.t.}\quad</div></td><td>
+<div class="tmath">\sum _ {k \in B} x _ {jk}= 1</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">\sum _ {j \in J} s_j x _ {jk} \le b</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">P_k \ge p_j x _ {jk}</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">C_k = C _ {k-1} + P_k</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">D_k \ge D _ {k-1}</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">D_k \le (d _ \text{max} - d_j)(1- x _ {jk}) + d_j</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">L _ \text{max} \ge C_k - D_k</div></td></tr>
+</table>
+
+</div>
+<div>
+
+<table class="mathalign">
+<tr><td class="mathalign-right">
+<div class="tmath">\text{Min.}\quad</div></td><td>
+<div class="tmath">L _ \text{max}</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath">\text{s.t.}\quad</div></td><td>
+<div class="tmath">\sum _ {k \in B} x _ {jk}= 1</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">\sum _ {j \in J} s_j x _ {jk} \le b</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">P' _ k \ge p_j x _ {jk} - p_k</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">P' _ k \ge 0</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">x _ {kk} \ge x _ {jk}</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath">x _ {jk} = 0</div></td></tr>
+
+<tr><td class="mathalign-right">
+<div class="tmath"></div></td><td>
+<div class="tmath"> L _ {k, single} - \sum _ {h \le k} x _ {hh} p_h + \sum _ {h \le k} P' _ h
+</div></td></tr>
+</table>
+</div>
+</div>
+
+You'll notice that <span class="math">C_k</span> and <span
+class="math">D_k</span> have completely disappeared from the new model. 
+
+### Benchmarking
+
+We were able to get rid of two sets of variables. We also strengthened the
+constraints: in the old model, moving jobs into later-scheduled batches was
+okay, although those solutions are equivalent to those in which jobs are only
+moved into earlier batches. Because of these improvements, we expected our new
+model to perform better&mdash;that is, we expected the solver to find the
+optimal solution quicker.
+
+So we tested the model against 120 test instances, and indeed: it was a
+difference like night and day. While the naive model above struggled to solve
+problems with 25 jobs within a reasonable amount of time, the new one plowed
+through many 75-job instances in a matter of minutes.
+
+Not only that, the new model held its own against Arnaud's sophisticated
+algorithm as well (Arnaud is a good sport and helped us run his code). Here are
+the results:
+
+<figure>
+<img src="{{path}}/scattercomp.svg" alt="Comparison of results">
+<figcaption>Every dot represents one benchmark instance; those solved faster by
+our improved MIP model are shown below the diagonal.</figcaption>
+</figure>
+
+## Conclusion
+
+There is a good chance that Arnaud's algorithm in combination with newer
+versions of the solver he used (Choco 3 vs Choco 2) will beat our model. But at
+the end of the day, it's still relatively sophisticated. MIP models, on the
+other hand, are easily implemented by just anyone, and we were able to greatly
+improve on the "obvious" formulation just by applying some strategic thinking.
+
+For the casual reader, I do hope this was a somewhat satisfactory answer to the
+question of "what *exactly* are you working on?", and I hope the visualizations
+conveyed an intuition for the ideas behind the proofs that make up the bulk of
+the actual paper.
+
+For those with a background in writing scheduling models or other
+integer programs, I want to point out something *even cooler* (in my
+opinion, at least) than having designed the new best-performing model, and that
+is the way we arrived at our new model: we did it by reasoning about moving
+a job from one batch to another, and forecasting the effects it would
+have on the solution. That kind of stateful, procedural thinking feels
+*wrong* in the declarative world of integer programming. And yet,
+because the moves are really just *assignments*, and assignments are
+independent of each other, it works&mdash;and it may be a useful way of
+thinking about similar problems, too.
+
+<div class="tombstone">&#9753;</div>

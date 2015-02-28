@@ -1,0 +1,202 @@
+
+div.exb {
+  width: 0em;
+  height: 19em;
+  position: absolute;
+  border-right: 0.3em gray dotted;
+  margin-left: 0.25em;
+}
+
+svg {max-height: 100%;}
+
+.hidden {
+  display: none;
+}
+
+.eq1 {
+  transform: scale(0.66);
+  -webkit-transform: scale(0.66);
+  transform-origin: 50% 0% 0;
+  -webkit-transform-origin: 50% 0% 0;
+}
+
+div.eq2a {
+  margin-top: 10%;
+  transform: scale(0.66);
+  -webkit-transform: scale(0.66);
+  transform-origin: 50% 0% 0;
+  -webkit-transform-origin: 50% 0% 0;
+}
+div.eq2 {
+  margin-top: 40%;
+  transform: scale(0.66);
+  -webkit-transform: scale(0.66);
+  transform-origin: 50% 0% 0;
+  -webkit-transform-origin: 50% 0% 0;
+}
+div.eq3 {
+  margin-top: 5%;
+  transform: scale(0.66);
+  -webkit-transform: scale(0.66);
+  transform-origin: 50% 0% 0;
+  -webkit-transform-origin: 50% 0% 0;
+}
+img {
+  margin: 0px;
+  padding: 0px;
+  text-align: left;
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+img.bl {
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+  margin: 0;
+}
+
+table tr.eq td {
+  vertical-align: middle; 
+}
+
+#ex1 {
+  -webkit-transform-origin: 0% 50% 0;
+  transform-origin: 0% 50% 0;
+  margin-top: 13em;
+  margin-bottom: 14em;
+}
+#ex2 {
+  transform-origin: 0% 50% 0;
+  -webkit-transform-origin: 0% 50% 0;
+  height: 10em;
+  margin-bottom: -3em;
+}
+#ex3 {
+  transform-origin: 0% 50% 0;
+  -webkit-transform-origin: 0% 50% 0;
+  height: 10em;
+  margin-bottom: -3em;
+}
+#ex4 {
+  transform-origin: 0% 50% 0;
+  height: 10em;
+  -webkit-transform-origin: 0% 50% 0;
+}
+#ex5 {
+  transform-origin: 0% 50% 0;
+  height: 10em;
+  margin-bottom: -3em;
+  -webkit-transform-origin: 0% 50% 0;
+}
+
+div.exax {
+  //background-color: #dddddd;
+  border-top: solid 0.4em gray;
+  width: 110em;
+  height: 19em;
+  position: absolute;
+  left: -0em;
+  bottom: 0em;
+}
+
+.exj {
+  margin: 0px;
+  /*padding: 4em;*/
+  position: absolute;
+  bottom: 0;
+  display: inline-block;
+  color: white;
+  text-shadow: 1px 0px 6px rgba(0,0,0,1);
+}
+
+.exj span {
+  position: absolute;
+  bottom: 0.3em;
+  font-size: 3em;
+  left: 0.3em;
+  font-weight: 700;
+}
+
+.exl {
+  margin: 0px;
+  top: 0em;
+  display: inline-block;
+  color: white;
+  opacity: 0.4;
+  text-shadow:none;
+}
+
+.exl span {
+  position: absolute;
+  top: 0.3em;
+  font-size: 5em;
+  right: 0.1em;
+  text-align:right;
+  font-weight: 900;
+}
+img.ex1a {
+  position: absolute;
+  max-height: none;
+  border: none;
+  box-shadow: none;
+  display: none;
+}
+
+
+#dastebox {
+  float:left; margin-left:3.2em; padding: 0.3em;
+}
+#malapertbox {
+  float:left; margin-left:4em; padding: 0.3em;
+}
+#koschbox {
+  float:left; margin-left:8em; padding: 0.3em;
+}
+
+tr.bottomgray td {
+  border-bottom: 1px solid gray;
+}
+
+tr.tableheader td {
+  font-weight: bold;
+  background-color: gray;
+  color: white;
+}
+
+tr#totalL td{
+  font-weight: bold;
+  border-top: 4px double gray;
+}
+
+tr.equalk td:not(:first-child) {
+  width: 10.6%;
+  text-align:right;
+}
+
+.info {background: darkgrey;
+  color: white;
+  padding-left: 0.3em;
+}
+
+.figexpright {
+  width: 30em;
+  font-size:80%;
+  font-style: italic;
+  float:right;
+  margin-bottom: 1em;
+  height: 6em;
+}
+
+.tmath {
+}
+
+.mathalign {
+  border: 0px;
+  margin-left: 30%;
+}
+
+.mathalign-right {
+  text-align: right;
+}
