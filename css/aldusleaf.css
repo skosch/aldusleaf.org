@@ -1,8 +1,8 @@
 body {
-  font-family: "Work Sans2", sans-serif;
+  font-family: "Work Sans", sans-serif;
   font-size: 100%;
-  line-height: 135%;
-  color: #222;
+  line-height: 145%;
+  color: #111;
   margin: 0px;
   padding: 0px;
 }
@@ -21,7 +21,7 @@ p {
 }
 
 @font-face {
-  font-family: "Work Sans2";
+  font-family: "Work Sans";
   font-style: normal;
   font-weight: 400;
   src: url("Fonts/WorkSans-Regular.woff2") format("woff2"), url("Fonts/WorkSans-Regular.woff") format("woff");
@@ -172,11 +172,11 @@ a.topheader-link:hover:before {
 
 
 .bloglink-category {
-  color: gray;
+  color: #888;
   text-transform: uppercase;
   letter-spacing: 0.3em;
   font-size: 91%;
-  font-weight: 600;
+  font-weight: 900;
   margin: 0;
   padding: 0;
 }
@@ -214,7 +214,7 @@ h1.blogtitle {
   font-family: "Inknut Antiqua", serif;
   font-weight: 700;
   color: #DC143C;
-  margin: 0em 0em 0 0;
+  margin: 0.5em 0em 0.6em 0em;
   line-height: 120%;
   letter-spacing: -0.05em;
 }
@@ -319,6 +319,11 @@ table.tttable tr th {
 
 figure {
   padding: 1em;
+  margin-left: 0em;
+}
+
+img {
+  max-width: 100%;
 }
 
 figcaption {
@@ -329,15 +334,22 @@ figcaption {
 }
 
 /*** CODE ***/
+code {
+  font-family: "Source Code Pro", "Anonymous Pro", "Inconsolata", "Lucida Sans Typewriter", "Lucida Console", "monaco", "Bitstream Vera Sans Mono", monospace;
+  background-color: #e0e0e0;
+  padding: 0.1em 0.34em;
+}
 
 pre {
+  font-family: "Source Code Pro", "Anonymous Pro", "Inconsolata", "Lucida Sans Typewriter", "Lucida Console", "monaco", "Bitstream Vera Sans Mono", monospace;
   margin-left: 1em;
   border-left: 2px #343434 solid;
   padding: 1em;
-  background-color: #EfEfEf;
+  background-color: #e0e0e0;
   line-height: 130%;
   font-size: 90%;
   width: 92%;
+  overflow: scroll;
 }
 
 .math {

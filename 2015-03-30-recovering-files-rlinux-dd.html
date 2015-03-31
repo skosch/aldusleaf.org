@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<html>
+<head>
+ <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/favicon.ico" type="image/x-icon"> 
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>File rescue with R-Linux and dd  &mdash; aldusleaf.org</title>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>!window.jQuery && document.write('<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js">')</script>
+
+<link rel="stylesheet" href="js/highlight.js/styles/default.css">
+    <script src="js/highlight.js/highlight.pack.js" type="text/javascript"></script>
+
+    <link type="text/css" rel="stylesheet" href="css/aldusleaf.css">
+    
+  </head>
+  <body>
+    <!--[if lt IE 9]>
+    <p class="chromeframe">You are using an                    >
+    <strong>outdated</strong> browser. You might have trouble reading some
+    of the math on this site. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activat>
+      e Google Chrome Frame</a> to improve your experience.</p       >
+    <![endif]-->
+    <div id="backgrounddiv">
+      <p class="leftheader pagetitle"><a href="index.html" style="color:white;
+      font-size: 1.3em">
+      <img style=" vertical-align: -0.4em; padding-right:0.6em;"
+      src="aldusleaf_white.png"></img></a></p>
+      <ul style="list-style:none;">
+        <li><a class="leftheader-link" href="index.html">Posts</a></li>
+        <li><a class="leftheader-link" href="crimson.html">Crimson</a></li>
+        <li><a class="leftheader-link" href="about.html">About</a></li>
+      </ul>
+    </div>
+
+    <div id="content">
+      
+  <div class="bloglink-entry">
+    <div class="bloglink-header">
+      <p class="bloglink-category">March 30th, 2015</p>
+       <h1 class="blogtitle">File rescue with R-Linux and dd</h1>
+          <p class="bloglink-subtitle">
+          
+          </p>
+      </div>
+          <p class="bloglink-teaser">
+          <p>Four days ago, a colleague of mine appropriated the old Linux
+box I wasn't using anymore. He needed to run Windows-based instrumentation
+software, and I, basking in my smug confidence that all of my research code
+was mirrored on Github, because <em>only an idiot wouldn't back things up</em>, put on
+my most magnaminous, cavalier smile and said "sure man, go ahead and wipe it, I got
+a copy of everything".</p>
+<p>Of course, there was no copy.</p>
+<p>I also didn't have a spare terabyte-sized hard drive lying around to pull an
+image onto, for later file carving attempts. So I had to work from a USB-booted
+Live Xubuntu and access the unmounted NTFS (previously ext4) partition directly.
+Here's what I learned.</p>
+<ul>
+<li>SleuthKit/Autopsy are very popular. But unless I missed something, they require an
+  image file, and that wasn't going to happen.</li>
+<li>PhotoRec ran briefly, but didn't produce anything useful, and then asked me
+  whether I wanted to store the remaining (?) 950&nbsp;GB as an image file. No thank
+  you.</li>
+<li>extundelete refused to run at all, because the partition was now NTFS.</li>
+<li>TestDisk (i.e. attempting to restore the ext4) was out of the question,
+  because I couldn't risk ruining my colleague's Windows system.</li>
+</ul>
+<p>Having exhausted the popular open source options, I searched on and found 
+<a href="http://www.r-tt.com/free_linux_recovery/">R-Linux</a>, an obscure
+freeware tool developed in Richmond Hill, Ontario, just a town over from here.
+It has a pleasant GUI and, after scanning my hard drive overnight, it recognized
+the old ext4 partition, starting exactly 986830848 sectors in.
+<figure>
+<img src="posts/2015-03-30-recovering-files-rlinux-dd/rlinux1.jpg" style="width:40em" alt="R-Linux showing the found ext4 partition">
+<figcaption>R-Linux showing the old ext4 partition it found</figcaption>
+</figure></p>
+<p>A double-click on said partition reveals all of the old inodes found on the
+partition. You can open said inodes and look at their content&mdash;it's binary junk,
+most of it; punctuated by the occasional image or text file. At any rate, it's
+impossible to look through all of them by hand, and for some bizarre reason
+R-Linux, in all its beauty, offers no way of searching through the inodes'
+contents (at least the "Find/Mark" function doesn't appear to be doing that).</p>
+<figure>
+<img src="posts/2015-03-30-recovering-files-rlinux-dd/rlinux2.jpg" alt="R-Linux showing the inodes on the drive"
+style="width:40em">
+<figcaption>R-Linux showing the inodes on the drive</figcaption>
+</figure>
+
+<p>There is another, old-school way to search, though: grep. And it works suprisingly well:</p>
+<pre>
+sudo dd if=/dev/sda2 skip=986830848 bs=512 count=937498624 | grep --text -A 1000 -B 10 'import numpy as np' | tee results
+</pre>
+
+<p>First, we use <code>dd</code> to read out the raw bytes on <code>/dev/sda2</code>. We start at
+sector 986830848, we specify a sector (here: block) to have a size <code>bs</code> of 512
+bytes each, and we read out 937498624 sectors (all of those were given to us by R-Linux). The
+output is piped to <code>grep --text</code>. The <code>-A</code> and <code>-B</code> arguments ask grep to spit
+out not only the lines matching <code>import numpy as np</code> (I was looking for Python
+code), but also 10 lines before
+and 1000 lines after. Finally, <code>tee</code> lets us see the output on the screen, while
+also saving it to a text file called <code>results</code>.</p>
+<p>I recovered three of my five Python files this way. Some of them were found
+several times over, in various garbled and outdated incarnations. Two of them
+are lost, probably, forever. But that's okay. I suppose I had to learn my
+lesson.</p>
+<div class="tombstone">&#9753;</div>
+          </p>
+    </div>
+
+
+        
+      
+      <div class="footer">
+      Last updated: 2015-03-30.<br/>
+      <a rel="license"
+      href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.en_US"><img
+      alt="Creative Commons License" style="border-width:0"
+      src="http://i.creativecommons.org/l/by-nc-nd/3.0/80x15.png" /></a><br
+      /><span xmlns:dct="http://purl.org/dc/terms/"
+      href="http://purl.org/dc/dcmitype/StillImage" property="dct:title"
+      rel="dct:type">Unless otherwise noted, the content of this website</span>
+      by <span xmlns:cc="http://creativecommons.org/ns#"
+      property="cc:attributionName">Sebastian Kosch</span> is licensed under a
+      <a rel="license"
+      href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.en_US"
+      style="color: #9C2D3C;" >Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.
+      </div>
+
+      
+    </div>
+
+
+
+    </body>
+  </html>

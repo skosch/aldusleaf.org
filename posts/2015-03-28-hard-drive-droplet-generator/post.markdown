@@ -88,7 +88,7 @@ href="http://en.wikipedia.org/wiki/Plateau%E2%80%93Rayleigh_instability"
 
 Except, how do you go about the water-shaking part?
 
-Well, you could go back to piezoelectric elements once more. And, in fact, you can buy
+Well, you could have recourse to piezoelectric elements once more. And, in fact, you can buy
 droplet-generating machines that do exactly that (the most popular design is
 by Berglund and Liu; paper <a
 href="http://pubs.acs.org/doi/abs/10.1021/es60074a001">here</a>).
@@ -98,7 +98,7 @@ VOAG3450 model</a>, for instance, sell for US$2500 on eBay.
 
 So, <a
 href="http://rspa.royalsocietypublishing.org/content/royprsa/290/1423/54
-7.full.pdf">for half a century</a> now, many of us have resorted to taking a needle
+7.full.pdf">for half a century</a> now, many of us have resorted to clamping a needle into a lab stand
 and shaking it with the cone of a speaker, because speakers are cheap. Now, the
 problem is that depending on the liquid, the needle, and the droplet size you
 need to produce, you get to listen to this all day:
@@ -125,12 +125,16 @@ It's straightforward: the arm pivots about an axis. At its tip sits the read/wri
 you'll rip out); glued onto the other end is a flat area of copper wire wound into a
 coil. That coil, sandwiched between two magnets, becomes magnetic itself once
 you electrify it and instantaneously whips the arm to the side.
-Reverse the current, and the arm flits to the other side. The actuator is
+Reverse the current, and the arm flits to the other side. During normal operation, the actuator is
 controlled by very precise servo electronics (which you'll rip out as well), and
-it can move extremely fast&mdash;it has to, because modern hard drives spin at
-7200RPM. You will apply an alternating current to the coil to make the arm
-vibrate. In my experience, the arm will translate frequencies up to 17,000&nbsp;Hz
-into movement without any problem, and probably beyond.
+it moves extremely fast&mdash;it has to, because modern hard drives spin at
+7200RPM.
+
+To cut a short story even shorter, you'll apply an alternating current
+to the coil to make the arm vibrate, to shake the nozzle, to break up the water
+jet. In my experience, the arm will translate frequencies up to
+17,000&nbsp;Hz (i.e. the upper limit of my hearing range) into movement
+without any problem, and probably beyond.
 
 <h2>Construction and Operation</h2>
 <figure>
@@ -228,7 +232,7 @@ estimated from photograph). Photos shown are <span
 class="math">D_d</span>=200&nbsp;&mu;m and 386&nbsp;&mu;m.</figcaption>
 </figure>
 
-<em>Note: if you build one of these things, it would make my day if you cited my
+<em>Note: if you should build one of these things, it would make my day if you cited my
 original article or linked to this page. Also, if you use the hard drive
 actuator as a vibration source for another purpose, I'd love to know so I can
 make a note of it here.</em>

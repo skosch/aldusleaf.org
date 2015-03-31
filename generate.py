@@ -30,6 +30,7 @@ for f in postdirs:
   text = input_file.read()
 
   postdict['post_content'] = markdown.markdown(text, output_format="html5")
+  postdict['post_filename'] = f
   postdict['post_content'] = postdict['post_content'].replace("{{path}}", os.path.join("posts/", f))
   # add date generated
   postdict['dategenerated'] = datetime.datetime.now().strftime("%Y-%m-%d")
